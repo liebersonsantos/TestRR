@@ -1,0 +1,21 @@
+<resources>
+    <string name="app_name">R&amp;R Tracking</string>
+    <string name="navigation_drawer_open">Open navigation drawer</string>
+    <string name="navigation_drawer_close">Close navigation drawer</string>
+    <string name="nav_header_title">Android Studio</string>
+    <string name="nav_header_subtitle">android.studio@android.com</string>
+    <string name="nav_header_desc">Navigation header</string>
+    <string name="action_settings">Settings</string>
+    <string name="instrument_name">Instrument name</string>
+    <string name="instrumento">Instrumento</string>
+    <string name="violao">Violão</string>
+    <string name="imei">IMEI</string>
+    <string name="numero_de_serie">Número de série</string>
+    <string name="gps">GPS</string>
+    <string name="digite_seu_e_mail_para_enviarmos_uma_nova_senha">Digite seu e-mail para enviarmos \numa nova senha</string>
+    <string name="title_activity_maps">Map</string>
+    <string name="nome_do_instrumento">Nome do Instrumento</string>
+    <string name="imei1">IMEI</string>
+    <string name="endere_o">Endereço</string>
+    <string name="ltima_localiza_o">Última localização</string>
+</resources>

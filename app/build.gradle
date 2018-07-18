@@ -1,0 +1,82 @@
+apply plugin: 'com.android.application'
+
+android {
+    compileSdkVersion 27
+    defaultConfig {
+        applicationId "com.example.naville.rrtracking_android"
+        minSdkVersion 21
+        targetSdkVersion 27
+        versionCode 1
+        versionName "1.0"
+        testInstrumentationRunner "android.support.test.runner.AndroidJUnitRunner"
+    }
+    buildTypes {
+        release {
+            minifyEnabled false
+            proguardFiles getDefaultProguardFile('proguard-android.txt'), 'proguard-rules.pro'
+        }
+    }
+    compileOptions {
+        targetCompatibility 1.8
+        sourceCompatibility 1.8
+    }
+}
+
+dependencies {
+
+    implementation fileTree(dir: 'libs', include: ['*.jar'])
+    implementation 'com.android.support:appcompat-v7:27.1.1'
+    implementation 'com.android.support:support-v4:27.1.1'
+    implementation 'com.android.support:design:27.1.1'
+    implementation 'com.android.support.constraint:constraint-layout:1.1.2'
+
+    /*############Material Design###########*/
+    implementation 'com.android.support:cardview-v7:27.1.1'
+    implementation 'de.hdodenhof:circleimageview:2.2.0'
+    /*############################################################################*/
+
+    /*###########################Play Services####################################*/
+    implementation 'com.google.android.gms:play-services:11.8.0'
+    implementation 'com.google.android.gms:play-services-maps:11.8.0'
+    implementation 'com.google.android.gms:play-services-places:11.8.0'
+    /*############################################################################*/
+
+    /*############################ Retrofit ######################################*/
+    implementation "com.squareup.retrofit2:adapter-rxjava2:${rootProject.retrofit}"
+    implementation "com.squareup.retrofit2:retrofit:${rootProject.retrofit}"
+    /*############################################################################*/
+
+    /*############################ Gson: Json Converter ##########################*/
+    implementation "com.squareup.retrofit2:converter-gson:${rootProject.retrofit}"
+    implementation "com.google.code.gson:gson:${rootProject.gson}"
+    /*############################################################################*/
+
+    /*################ Facebook Sthetho for debug conections #####################*/
+    implementation "com.facebook.stetho:stetho:${rootProject.stetho}"
+    implementation "com.facebook.stetho:stetho-okhttp3:${rootProject.stetho}"
+    /*############################################################################*/
+
+    /*########################### ReactiveX ######################################*/
+    implementation "io.reactivex.rxjava2:rxjava:${rootProject.rxjava}"
+    implementation "io.reactivex.rxjava2:rxandroid:${rootProject.rxandroid}"
+    /*############################################################################*/
+
+    /*###########################Butter Knife#####################################*/
+    implementation 'com.jakewharton:butterknife:8.8.1'
+    annotationProcessor 'com.jakewharton:butterknife-compiler:8.8.1'
+    /*############################################################################*/
+
+    /*################################Picasso#####################################*/
+    implementation 'com.squareup.picasso:picasso:2.71828'
+    /*############################################################################*/
+
+    /*#################################MULTIDEX###################################*/
+    implementation "com.android.support:multidex:${rootProject.multidex}"
+    /*############################################################################*/
+
+    /*################################Testes######################################*/
+    testImplementation 'junit:junit:4.12'
+    androidTestImplementation 'com.android.support.test:runner:1.0.2'
+    androidTestImplementation 'com.android.support.test.espresso:espresso-core:3.0.2'
+    /*############################################################################*/
+}
