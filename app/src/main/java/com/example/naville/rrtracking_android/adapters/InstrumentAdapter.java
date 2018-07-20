@@ -1,5 +1,6 @@
 package com.example.naville.rrtracking_android.adapters;
 
+import android.app.Activity;
 import android.support.annotation.NonNull;
 import android.support.v7.widget.RecyclerView;
 import android.util.Log;
@@ -17,7 +18,9 @@ import com.example.naville.rrtracking_android.R;
 import com.example.naville.rrtracking_android.model.Image;
 import com.example.naville.rrtracking_android.model.Instrument;
 import com.example.naville.rrtracking_android.util.Constants;
+import com.example.naville.rrtracking_android.util.CustomAlertDialog;
 import com.example.naville.rrtracking_android.util.ImageUtil;
+import com.github.chrisbanes.photoview.PhotoView;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -28,10 +31,6 @@ public class InstrumentAdapter extends RecyclerView.Adapter<InstrumentAdapter.In
 
     private List<String> imagensList;
 
-    public InstrumentAdapter(){
-        imagensList = new ArrayList<>();
-    }
-
     public InstrumentAdapter(List<String> imagensList) {
         this.imagensList = imagensList;
     }
@@ -41,15 +40,15 @@ public class InstrumentAdapter extends RecyclerView.Adapter<InstrumentAdapter.In
     public InstrumentViewHolder onCreateViewHolder(@NonNull ViewGroup parent, int viewType) {
 
         View view = LayoutInflater.from(parent.getContext())
-                .inflate(R.layout.detail_instruments, parent, false);
+                .inflate(R.layout.item_image, parent, false);
 
         return new InstrumentAdapter.InstrumentViewHolder(view);
     }
 
     @Override
     public void onBindViewHolder(@NonNull InstrumentViewHolder holder, int position) {
-
-
+        String imageUrl = imagensList.get(position);
+        holder.bind(imageUrl);
     }
 
     @Override
@@ -58,21 +57,32 @@ public class InstrumentAdapter extends RecyclerView.Adapter<InstrumentAdapter.In
         return (imagensList != null && imagensList.size() > 0) ? imagensList.size() : 0;
     }
 
-    public class InstrumentViewHolder extends RecyclerView.ViewHolder{
+    class InstrumentViewHolder extends RecyclerView.ViewHolder{
 
+        private ImageView imageView;
 
-        public InstrumentViewHolder(View itemView) {
+        InstrumentViewHolder(View itemView) {
             super(itemView);
-
-
+            imageView = itemView.findViewById(R.id.image);
         }
 
+        public void bind(String imageUrl){
+            ImageUtil.loadImage(Constants.URL_IMAGE+"/"+imageUrl, imageView, null, R.drawable.logo);
+
+            imageView.setOnClickListener(new View.OnClickListener() {
+                @Override
+                public void onClick(View v) {
+
+                    CustomAlertDialog.customDialogImageZoom((Activity) v.getContext(), imageUrl);
+
+                }
+            });
+
+        }
 
     }
     public void setImagensList(List<String> imagensListInst){
         this.imagensList = imagensListInst;
         notifyDataSetChanged();
     }
-
-
 }

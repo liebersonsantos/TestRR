@@ -20,7 +20,7 @@ public class MyGeocoder {
 
             for (int i = 0; i < getAddress.size(); i++) {
 
-                address = getAddress.get(0).getThoroughfare();
+                address = getAddress.get(0).getAddressLine(0);
                 Log.i("Geocoder", "Endereço: " + address);
             }
 

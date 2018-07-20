@@ -10,6 +10,8 @@ import android.util.Log;
 
 import com.google.android.gms.common.api.GoogleApiClient;
 import com.google.android.gms.location.FusedLocationProviderClient;
+import com.google.android.gms.location.LocationCallback;
+import com.google.android.gms.location.LocationRequest;
 import com.google.android.gms.location.LocationServices;
 import com.google.android.gms.tasks.OnCompleteListener;
 import com.google.android.gms.tasks.Task;
@@ -21,6 +23,8 @@ public class MyLocation {
     public static FusedLocationProviderClient fusedLocationProviderClient;
     public static Location mMyLocation;
     public static Double lat, lng;
+    public static LocationCallback locationCallback;
+    public static LocationRequest mLocationRequest;
 
     public static void fusedLocation(Activity activity) {
 
@@ -54,6 +58,11 @@ public class MyLocation {
                         lng = mMyLocation.getLongitude();
 
                         Log.i(TAG, "onComplete: " + lat + " " + lng);
+
+                        mLocationRequest = new LocationRequest();
+                        mLocationRequest.setInterval(1000);
+                        mLocationRequest.setFastestInterval(100);
+                        mLocationRequest.setPriority(LocationRequest.PRIORITY_HIGH_ACCURACY);
                 }
 
                 }catch (Exception e){
@@ -64,5 +73,7 @@ public class MyLocation {
         });
 
     }
+
+
 
 }

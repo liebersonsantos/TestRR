@@ -13,30 +13,35 @@
     android:paddingTop="@dimen/activity_vertical_margin"
     android:theme="@style/ThemeOverlay.AppCompat.Dark">
 
-    <!--<ImageView-->
+    <!--<de.hdodenhof.circleimageview.CircleImageView-->
         <!--android:id="@+id/logo"-->
-        <!--android:layout_width="0dp"-->
-        <!--android:layout_height="0dp"-->
+        <!--android:layout_width="143dp"-->
+        <!--android:layout_height="143dp"-->
         <!--android:layout_marginBottom="8dp"-->
-        <!--android:layout_marginEnd="100dp"-->
-        <!--android:layout_marginStart="100dp"-->
+        <!--android:layout_marginEnd="8dp"-->
+        <!--android:layout_marginStart="8dp"-->
         <!--android:layout_marginTop="8dp"-->
-        <!--android:contentDescription="@string/nav_header_desc"-->
-        <!--android:paddingTop="@dimen/nav_header_vertical_spacing"-->
-        <!--android:scaleType="centerCrop"-->
+        <!--android:elevation="4dp"-->
+        <!--android:src="@drawable/logo"-->
         <!--app:layout_constraintBottom_toBottomOf="parent"-->
         <!--app:layout_constraintEnd_toEndOf="parent"-->
         <!--app:layout_constraintStart_toStartOf="parent"-->
-        <!--app:layout_constraintTop_toTopOf="parent"-->
-        <!--app:srcCompat="@drawable/logo" />-->
+        <!--app:layout_constraintTop_toTopOf="parent" />-->
 
-    <de.hdodenhof.circleimageview.CircleImageView
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:scaleType="centerCrop"
-        android:id="@+id/logo"
-        android:src="@drawable/logo"
-        />
+    <ImageView
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:layout_marginBottom="8dp"
+        android:layout_marginEnd="8dp"
+        android:layout_marginStart="8dp"
+        android:layout_marginTop="8dp"
+        android:src="@drawable/ic_rr_nav"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent" />
+
+
 
 
 

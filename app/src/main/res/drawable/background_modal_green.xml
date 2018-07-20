@@ -1,19 +1,28 @@
-<shape xmlns:android="http://schemas.android.com/apk/res/android"
-    android:padding="10dp"
-    android:shape="rectangle">
+<?xml version="1.0" encoding="utf-8"?>
+<ripple
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:color="#046c2f"
+    tools:targetAp="lollipop">
 
-    <gradient
-        android:angle="90"
-        android:centerColor="#0b7608"
-        android:endColor="#63d05f"
-        android:startColor="#000000"
-        android:type="linear" />
+    <item>
+        <shape
+            android:padding="10dp"
+            android:shape="rectangle">
 
+            <gradient
+                android:angle="90"
+                android:centerColor="#0b7608"
+                android:endColor="#63d05f"
+                android:startColor="#464444"
+                android:type="linear" />
 
-    <corners
-        android:bottomLeftRadius="8dp"
-        android:bottomRightRadius="8dp"
-        android:topLeftRadius="8dp"
-        android:topRightRadius="8dp" />
-</shape>
+            <corners
+                android:bottomLeftRadius="8dp"
+                android:bottomRightRadius="8dp"
+                android:topLeftRadius="8dp"
+                android:topRightRadius="8dp" />
+        </shape>
+    </item>
 
+</ripple>

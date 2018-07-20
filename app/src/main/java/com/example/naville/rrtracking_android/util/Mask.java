@@ -1,11 +1,13 @@
 package com.example.naville.rrtracking_android.util;
 
+import android.annotation.SuppressLint;
 import android.annotation.TargetApi;
 import android.app.Activity;
 import android.content.Context;
 import android.content.DialogInterface;
 import android.content.pm.PackageManager;
 import android.os.Build;
+import android.support.constraint.ConstraintLayout;
 import android.support.v4.app.ActivityCompat;
 import android.support.v4.content.ContextCompat;
 import android.support.v7.app.AlertDialog;
@@ -132,9 +134,10 @@ public class Mask {
             }
         }
 
-        public static void fechaTeclado(LinearLayout lnlLayout, final Activity activity) {
+        @SuppressLint("ClickableViewAccessibility")
+        public static void closeKeyboard(ConstraintLayout layout, final Activity activity) {
 
-            lnlLayout.setOnTouchListener(new View.OnTouchListener() {
+            layout.setOnTouchListener(new View.OnTouchListener() {
                 @Override
                 public boolean onTouch(View view, MotionEvent motionEvent) {
                     InputMethodManager imm = (InputMethodManager) activity.getSystemService(activity.INPUT_METHOD_SERVICE);

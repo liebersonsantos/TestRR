@@ -6,10 +6,13 @@ import android.app.AlertDialog;
 import android.app.Dialog;
 import android.app.ProgressDialog;
 import android.content.Intent;
+import android.content.pm.PackageManager;
 import android.os.Bundle;
 import android.support.annotation.NonNull;
 import android.support.design.widget.CoordinatorLayout;
 import android.support.design.widget.NavigationView;
+import android.support.design.widget.Snackbar;
+import android.support.v4.app.ActivityCompat;
 import android.support.v4.view.GravityCompat;
 import android.support.v4.widget.DrawerLayout;
 import android.support.v7.app.ActionBarDrawerToggle;
@@ -39,9 +42,12 @@ import com.example.naville.rrtracking_android.adapters.InstrumentAdapter;
 import com.example.naville.rrtracking_android.model.Image;
 import com.example.naville.rrtracking_android.model.Instrument;
 import com.example.naville.rrtracking_android.model.InstrumentResponse;
+import com.example.naville.rrtracking_android.model.User;
 import com.example.naville.rrtracking_android.network.RestClient;
 import com.example.naville.rrtracking_android.presenter.PresenterMainActivity;
+import com.example.naville.rrtracking_android.task.LoginInterface;
 import com.example.naville.rrtracking_android.util.Constants;
+import com.example.naville.rrtracking_android.util.CustomAlertDialog;
 import com.example.naville.rrtracking_android.util.ImageUtil;
 import com.example.naville.rrtracking_android.util.MyGeocoder;
 import com.example.naville.rrtracking_android.util.MyLocation;
@@ -92,7 +98,6 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
     @BindView(R.id.instrumentIMEI)
     TextView textIMEI;
 
-
     private GoogleMap mMap;
     private LatLng myLocation;
     private static final String TAG = "LOCATION";
@@ -103,6 +108,9 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
     private boolean load = false;
     private AlertDialog.Builder builder;
     private Dialog dialog;
+    private LatLng latLngInstrumentPin;
+    private User user = new User();
+    private Bundle bundle;
 
     static int animatioDuration = 200;
     Boolean clicked = false;
@@ -116,13 +124,21 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
         ButterKnife.bind(this);
         setSupportActionBar(toolbar);
 
+        MyLocation.fusedLocation(this);
+        MyLocation.getMyLocation(this);
+
+
+        bundle = getIntent().getExtras();
+
+        if (bundle != null && bundle.containsKey("USER")){
+            user = bundle.getParcelable("USER");
+        }
+
         SupportMapFragment mapFragment = (SupportMapFragment) getSupportFragmentManager()
                 .findFragmentById(R.id.map);
         mapFragment.getMapAsync(this);
 
         progressDialog = new ProgressDialog(this);
-
-        myLocation = new LatLng(MyLocation.lat, MyLocation.lng);
 
         ActionBarDrawerToggle toggle = new ActionBarDrawerToggle(
                 this, drawer, toolbar, R.string.navigation_drawer_open, R.string.navigation_drawer_close);
@@ -130,8 +146,6 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
         toggle.syncState();
 
         navigationView.setNavigationItemSelectedListener(this);
-
-        initAdapterDetail();
 
 
     }
@@ -143,7 +157,10 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
     @OnClick(R.id.gps_card_id)
     void getMyCurrentLocation() {
 
-        onMapReady(mMap);
+        myLocation = new LatLng(MyLocation.lat, MyLocation.lng);
+
+        mMap.animateCamera(CameraUpdateFactory.newLatLngZoom(myLocation, 18));
+        MyGeocoder.getMyAddress(this, MyLocation.lat, MyLocation.lng);
     }
 
     @Override
@@ -175,80 +192,87 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
                 btnAnimationLayoutDown();
                 cardViewGps.setVisibility(View.INVISIBLE);
 
-                RestClient.getInstanceLogin(this).gettingAllInstruments().enqueue(new Callback<InstrumentResponse>() {
-                    @Override
-                    public void onResponse(Call<InstrumentResponse> call, Response<InstrumentResponse> response) {
-
-                        if (response.isSuccessful()) {
-                            progressDialog.dismiss();
-
-                            instrumentAdapter.setImagensList((List<String>) response.body());
-
-                            List<String> instrumentName = new ArrayList<>();
-                           instrumentList = response.body().getInstrumentList();
-
-                            if (response.body() != null) {
-                                for (int i = 0; i < response.body().getInstrumentList().size(); i++) {
-
-                                    instrumentName.add(response.body().getInstrumentList().get(i).getInstrumentName());
-
-                                    Log.e(TAG, "Instrument name: "+instrumentName.get(i));
-
-                                }
-                            }
-
-                            ArrayAdapter arrayAdapter = new ArrayAdapter<>(MainActivity.this, android.R.layout.simple_spinner_dropdown_item, instrumentName);
-                            spinnerInstruments.setAdapter(arrayAdapter);
-
-                            spinnerInstruments.setOnItemSelectedListener(new AdapterView.OnItemSelectedListener() {
-                                @Override
-                                public void onItemSelected(AdapterView<?> parent, View view, int position, long id) {
-
-                                    if (load){
-
-                                        Instrument instrument = instrumentList.get(position);
-
-                                        showInstrumentDetail(coordinatorLayout, cardView, instrument);
-
-                                        Toast.makeText(MainActivity.this, instrument.getInstrumentName(), Toast.LENGTH_SHORT).show();
-
-                                    }
-
-                                }
-
-                                @Override
-                                public void onNothingSelected(AdapterView<?> parent) {
-
-                                }
-                            });
-
-                            load = true;
-                        } else {
-
-                            Toast.makeText(MainActivity.this, "ERRO AO BUSCAR LISTA DE INSTRUMENTOS", Toast.LENGTH_SHORT).show();
-                        }
-                    }
-
-                    @Override
-                    public void onFailure(Call<InstrumentResponse> call, Throwable t) {
-
-                        Toast.makeText(MainActivity.this, "Verifique sua conexão com a rede", Toast.LENGTH_SHORT).show();
-                        Log.i(TAG, "onFailure: " + t.getMessage());
-                    }
-                });
-
-
-
+                callApiPlusSpinner();
 
                 clicked = !clicked;
             } else {
                 btnAnimationLayoutUp();
                 clicked = !clicked;
                 cardViewGps.setVisibility(View.VISIBLE);
+                hideCardView();
             }
             return true;
         }
         return super.onOptionsItemSelected(item);
+    }
+
+    private void callApiPlusSpinner() {
+        RestClient.getInstanceLogin(this).gettingAllInstruments().enqueue(new Callback<InstrumentResponse>() {
+            @Override
+            public void onResponse(Call<InstrumentResponse> call, Response<InstrumentResponse> response) {
+
+                if (response.isSuccessful()) {
+                    progressDialog.dismiss();
+
+                    List<String> instrumentName = new ArrayList<>();
+                    instrumentList = response.body().getInstrumentList();
+
+                    for (int i = 0; i < instrumentList.size(); i++) {
+                        instrumentName.add(instrumentList.get(i).getInstrumentName());
+                    }
+
+                    ArrayAdapter arrayAdapter = new ArrayAdapter<>(MainActivity.this, android.R.layout.simple_spinner_dropdown_item, instrumentName);
+                    spinnerInstruments.setAdapter(arrayAdapter);
+
+                    spinnerInstruments.setOnItemSelectedListener(new AdapterView.OnItemSelectedListener() {
+                        @Override
+                        public void onItemSelected(AdapterView<?> parent, View view, int position, long id) {
+
+                            if (load) {
+
+                                Instrument instrument = instrumentList.get(position);
+
+                                try {
+                                    if (instrument.getTrackerLatitude() != null && instrument.getTrackerLongitude() != null) {
+                                        latLngInstrumentPin = new LatLng(instrument.getTrackerLatitude(), instrument.getTrackerLongitude());
+                                        mMap.addMarker(new MarkerOptions().position(latLngInstrumentPin));
+                                        mMap.animateCamera(CameraUpdateFactory.newLatLngZoom(latLngInstrumentPin, 18));
+                                        showInstrumentDetail(coordinatorLayout, cardView, instrument);
+                                    } else {
+                                        Snackbar snackbar = Snackbar.make(coordinatorLayout, "Nenhum rastreador cadastrado para esse instrumento", Snackbar.LENGTH_LONG);
+                                        View snackBarView = snackbar.getView();
+                                        snackBarView.setBackgroundColor(getResources().getColor(R.color.colorPrimary));
+                                        snackbar.show();
+
+                                    }
+                                } catch (Exception e) {
+                                    Log.i(TAG, "onItemSelected: " + e.getMessage());
+                                }
+
+                            }
+
+                        }
+
+                        @Override
+                        public void onNothingSelected(AdapterView<?> parent) {
+
+                        }
+                    });
+
+                    load = true;
+                } else {
+
+                    Toast.makeText(MainActivity.this, "ERRO AO BUSCAR LISTA DE INSTRUMENTOS", Toast.LENGTH_SHORT).show();
+                }
+            }
+
+            @Override
+            public void onFailure(Call<InstrumentResponse> call, Throwable t) {
+
+                Toast.makeText(MainActivity.this, "Verifique sua conexão com a rede", Toast.LENGTH_SHORT).show();
+                Log.i(TAG, "onFailure: " + t.getMessage());
+            }
+        });
     }
 
     private void dialogInstruments() {
@@ -264,12 +288,11 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
         int id = item.getItemId();
 
         if (id == R.id.seeProfile) {
-            // Handle the camera action
+            CustomAlertDialog.customDialogProfileAnimated(this, user);
         } else if (id == R.id.about) {
             presenterMainActivity.aboutScreen();
         } else if (id == R.id.exit) {
             presenterMainActivity.lougoutMainActivity();
-
         }
 
         drawer.closeDrawer(GravityCompat.START);
@@ -301,20 +324,13 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
     public void onMapReady(GoogleMap googleMap) {
         mMap = googleMap;
 
-        mMap.animateCamera(CameraUpdateFactory.newLatLngZoom(myLocation, 18));
-        MyGeocoder.getMyAddress(this, MyLocation.lat, MyLocation.lng);
-        mMap.addMarker(new MarkerOptions().position(myLocation).title(MyGeocoder.address));
+        if (ActivityCompat.checkSelfPermission(this, android.Manifest.permission.ACCESS_FINE_LOCATION) != PackageManager.PERMISSION_GRANTED && ActivityCompat.checkSelfPermission(this, android.Manifest.permission.ACCESS_COARSE_LOCATION) != PackageManager.PERMISSION_GRANTED) {
+            return;
+        }
+
+
+        mMap.setMyLocationEnabled(true);
         mMap.setMapType(GoogleMap.MAP_TYPE_TERRAIN);
-
-        mMap.setOnMarkerClickListener(new GoogleMap.OnMarkerClickListener() {
-            @Override
-            public boolean onMarkerClick(Marker marker) {
-
-
-                return false;
-            }
-
-        });
 
     }
 
@@ -324,13 +340,18 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
 
         Log.e(TAG, "showInstrumentDetail: " + images.toString());
 
+        try {
+            if (images != null){
+                ImageUtil.loadImage(Constants.URL_IMAGE + images.get(0) , imageInstrument, progressBarImage, R.drawable.backgroundsanfona);
 
-        if (images == null){
-            Log.i(TAG, "showInstrumentDetail: " + Constants.URL_IMAGE + images.get(0));
-            Toast.makeText(this, "Verificar imagens no servidor", Toast.LENGTH_SHORT).show();
-        }else {
-            ImageUtil.loadImage(Constants.URL_IMAGE + images.get(0) , imageInstrument, progressBarImage, R.drawable.backgroundsanfona);
+            }else {
+                Log.i(TAG, "showInstrumentDetail: " + Constants.URL_IMAGE + images.get(0));
+                Toast.makeText(this, "Verificar imagens no servidor", Toast.LENGTH_SHORT).show();
+            }
+        }catch (Exception e){
+            Log.i(TAG, "showInstrumentDetail: " + e.getMessage());
         }
+
 
         textInstrumentName.setText(instrument.getInstrumentName());
         textIMEI.setText(instrument.getTrackerIMEINumber());
@@ -339,36 +360,36 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
             @Override
             public void onClick(View v) {
 
-             View view = LayoutInflater.from(MainActivity.this).inflate(R.layout.detail_instruments, null);
+                View view = LayoutInflater.from(MainActivity.this).inflate(R.layout.detail_instruments, null);
 
-             RecyclerView recyclerView = view.findViewById(R.id.recycler_view_instrument_detail);
-            TextView textNameDetail = view.findViewById(R.id.text_instrument_name_detail);
-            TextView textImeiDetail = view.findViewById(R.id.text_instrument_imei_detail);
-            TextView textAdressDetail = view.findViewById(R.id.text_instrument_adress_detail);
-            TextView textLastLocationDetail = view.findViewById(R.id.text_instrument_last_location_detail);
-            Button btnCloseDetail = view.findViewById(R.id.btn_close_detail);
+                RecyclerView recyclerView = view.findViewById(R.id.recycler_view_instrument_detail);
+                TextView textNameDetail = view.findViewById(R.id.text_instrument_name_detail);
+                TextView textImeiDetail = view.findViewById(R.id.text_instrument_imei_detail);
+                TextView textAdressDetail = view.findViewById(R.id.text_instrument_adress_detail);
+                TextView textLastLocationDetail = view.findViewById(R.id.text_instrument_last_location_detail);
+                Button btnCloseDetail = view.findViewById(R.id.btn_close_detail);
 
-                instrumentAdapter = new InstrumentAdapter();
+                instrumentAdapter = new InstrumentAdapter(images);
 
                 recyclerView.setLayoutManager(new LinearLayoutManager(MainActivity.this, LinearLayoutManager.HORIZONTAL, false));
                 recyclerView.setItemAnimator(new DefaultItemAnimator());
                 recyclerView.setAdapter(instrumentAdapter);
 
-            builder = new AlertDialog.Builder(MainActivity.this);
+                builder = new AlertDialog.Builder(MainActivity.this);
 
 
-            textNameDetail.setText(instrument.getInstrumentName());
-            textImeiDetail.setText(instrument.getTrackerIMEINumber());
-            textAdressDetail.setText(MyGeocoder.address);
-            textLastLocationDetail.setText(instrument.getTrackerLastLocation());
+                textNameDetail.setText(instrument.getInstrumentName());
+                textImeiDetail.setText(instrument.getTrackerIMEINumber());
+                textAdressDetail.setText(MyGeocoder.address);
+                textLastLocationDetail.setText(instrument.getTrackerLastLocation());
 
-            btnCloseDetail.setOnClickListener(new View.OnClickListener() {
-                @Override
-                public void onClick(View v) {
+                btnCloseDetail.setOnClickListener(new View.OnClickListener() {
+                    @Override
+                    public void onClick(View v) {
 
-                    dialog.dismiss();
-                }
-            });
+                        dialog.dismiss();
+                    }
+                });
 
                 builder.setView(view).setCancelable(false);
                 dialog = builder.create();
@@ -378,15 +399,12 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
         });
 
 
-       btnCloseCard.setOnClickListener(new View.OnClickListener() {
-           @Override
-           public void onClick(View v) {
-
-               hideCardView();
-
-           }
-       });
-
+        btnCloseCard.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                hideCardView();
+            }
+        });
 
         final Float[] n_t = {0f};
         son.post(new Runnable() {
@@ -413,17 +431,14 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
             }
         });
 
-
     }
 
     private void hideCardView() {
-
         ObjectAnimator animatorX = ObjectAnimator.ofFloat(cardView, "y", 30000);
         animatorX.setDuration(animatioDuration);
         AnimatorSet animatorSet = new AnimatorSet();
         animatorSet.playTogether(animatorX);
         animatorSet.start();
-
 
     }
 

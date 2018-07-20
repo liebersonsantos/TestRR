@@ -4,6 +4,7 @@ import android.app.Application;
 import android.content.Context;
 import android.support.multidex.MultiDex;
 
+import com.example.naville.rrtracking_android.util.MyLocation;
 import com.facebook.stetho.Stetho;
 
 public class CustomApplication extends Application {
@@ -13,6 +14,7 @@ public class CustomApplication extends Application {
         super.onCreate();
 
         Stetho.initializeWithDefaults(this);
+
     }
 
     @Override

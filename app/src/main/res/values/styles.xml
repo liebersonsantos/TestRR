@@ -24,4 +24,16 @@
 
     </style>
 
+    <style name="dialog_animation_profile">
+        <item name="android:windowEnterAnimation">@anim/slide_in_right_no_alpha</item>
+        <item name="android:windowExitAnimation">@anim/slide_out_left_no_alpha</item>
+
+    </style>
+
+    <style name="dialog_animation_privacy_policy">
+        <item name="android:windowEnterAnimation">@anim/slide_in_bottom</item>
+        <item name="android:windowExitAnimation">@anim/slide_out_bottom</item>
+
+    </style>
+
 </resources>

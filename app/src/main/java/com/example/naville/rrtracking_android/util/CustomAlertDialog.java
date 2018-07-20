@@ -4,6 +4,7 @@ package com.example.naville.rrtracking_android.util;
 import android.app.Activity;
 import android.content.DialogInterface;
 import android.content.Intent;
+import android.net.Uri;
 import android.support.design.widget.Snackbar;
 import android.support.design.widget.TextInputEditText;
 import android.support.v7.app.AlertDialog;
@@ -12,6 +13,8 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.widget.Button;
 import android.widget.ImageView;
+import android.widget.ProgressBar;
+import android.widget.TextView;
 import android.widget.Toast;
 
 import com.example.naville.rrtracking_android.R;
@@ -20,6 +23,8 @@ import com.example.naville.rrtracking_android.model.User;
 import com.example.naville.rrtracking_android.network.RestClient;
 import com.example.naville.rrtracking_android.presenter.PresenterForgotPassword;
 import com.example.naville.rrtracking_android.view.LoginActivity;
+import com.github.chrisbanes.photoview.PhotoView;
+import com.github.chrisbanes.photoview.PhotoViewAttacher;
 
 import java.util.Objects;
 
@@ -33,6 +38,7 @@ public class CustomAlertDialog {
     private static AlertDialog alertDialog = null;
     private static LoginActivity loginActivity = new LoginActivity();
     private static PresenterForgotPassword presenterForgotPassword = new PresenterForgotPassword(loginActivity);
+
 
     public static void customDialogAnimated(Activity activity, int customLayout) {
 
@@ -108,6 +114,63 @@ public class CustomAlertDialog {
 
     }
 
+    public static void customDialogProfileAnimated(Activity activity, User user) {
+
+        AlertDialog.Builder dialogBuilder = new AlertDialog.Builder(activity);
+        LayoutInflater inflater = activity.getLayoutInflater();
+        View dialogView = inflater.inflate(R.layout.custom_dialog_see_profile, null);
+
+        Button btnCloseProfile;
+        TextView textNameProfile;
+        TextView textIdProfile;
+
+        btnCloseProfile = dialogView.findViewById(R.id.btn_close_profile);
+        textNameProfile = dialogView.findViewById(R.id.text_name_profile);
+        textIdProfile = dialogView.findViewById(R.id.text_id_profile);
+
+        textNameProfile.setText(user.getUserName());
+        textIdProfile.setText(String.valueOf(user.getUserId()));
+
+        dialogBuilder.setView(dialogView);
+
+        final AlertDialog alertDialog = dialogBuilder.create();
+
+        btnCloseProfile.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                alertDialog.dismiss();
+            }
+        });
+
+        Objects.requireNonNull(alertDialog.getWindow()).getAttributes().windowAnimations = R.style.dialog_animation_profile;
+        alertDialog.show();
+    }
+
+    public static void customDialogPrivacyPolicyAnimated(Activity activity) {
+
+        AlertDialog.Builder dialogBuilder = new AlertDialog.Builder(activity);
+        LayoutInflater inflater = activity.getLayoutInflater();
+        View dialogView = inflater.inflate(R.layout.custom_dialog_privacy_policy, null);
+
+
+        Button btnClosePrivacy = dialogView.findViewById(R.id.btn_close_privacy);
+
+        dialogBuilder.setView(dialogView);
+
+        final AlertDialog alertDialog = dialogBuilder.create();
+
+        btnClosePrivacy.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                alertDialog.dismiss();
+            }
+        });
+
+        Objects.requireNonNull(alertDialog.getWindow()).getAttributes().windowAnimations = R.style.dialog_animation_privacy_policy;
+        alertDialog.show();
+    }
+
+
     public static void customDialogFullscreen() {
 
         // builder = new android.support.v7.app.AlertDialog.Builder(activity);
@@ -148,12 +211,7 @@ public class CustomAlertDialog {
         AlertDialog.Builder builder = new AlertDialog.Builder(activity);
         builder.setTitle(titulo);
         builder.setMessage(mensagem);
-        builder.setPositiveButton("Ok", new DialogInterface.OnClickListener() {
-            @Override
-            public void onClick(DialogInterface dialog, int which) {
-                dialog.dismiss();
-            }
-        });
+        builder.setPositiveButton("Ok", (dialog, which) -> dialog.dismiss());
 
         alertDialog = builder.create();
         alertDialog.setCanceledOnTouchOutside(false);
@@ -161,7 +219,35 @@ public class CustomAlertDialog {
 
     }
 
+    public static void customDialogImageZoom(Activity activity, String imageUrl) {
 
+        AlertDialog.Builder dialogBuilder = new AlertDialog.Builder(activity);
+        LayoutInflater inflater = activity.getLayoutInflater();
+        View dialogView = inflater.inflate(R.layout.custom_dialog_image_zoom, null);
+
+        Button btnCloseImageZoom;
+        PhotoView photoView;
+        ProgressBar progressBarZoom;
+
+        btnCloseImageZoom = dialogView.findViewById(R.id.btn_close_image_zoom);
+        photoView = dialogView.findViewById(R.id.image_zoom);
+        progressBarZoom = dialogView.findViewById(R.id.progress_zoom);
+
+        Log.i(TAG, "customDialogImageZoom: "+ Constants.URL_IMAGE + imageUrl);
+
+//        photoView.setImageURI(Uri.parse(Constants.URL_IMAGE + imageUrl));
+
+        ImageUtil.loadImage(Constants.URL_IMAGE + imageUrl, photoView, progressBarZoom, R.drawable.logo);
+
+        dialogBuilder.setView(dialogView);
+
+        final AlertDialog alertDialog = dialogBuilder.create();
+
+        btnCloseImageZoom.setOnClickListener(v -> alertDialog.dismiss());
+
+        Objects.requireNonNull(alertDialog.getWindow()).getAttributes().windowAnimations = R.style.dialog_animation_profile;
+        alertDialog.show();
+    }
 
 
 }

@@ -4,15 +4,27 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
+    android:id="@+id/constraint_id"
     android:background="@drawable/backgroundsanfona">
 
-    <de.hdodenhof.circleimageview.CircleImageView
+    <!--<de.hdodenhof.circleimageview.CircleImageView-->
+        <!--android:id="@+id/circleImageView2"-->
+        <!--android:layout_width="150dp"-->
+        <!--android:layout_height="150dp"-->
+        <!--android:layout_marginTop="32dp"-->
+        <!--android:scaleType="centerCrop"-->
+        <!--android:src="@drawable/logo"-->
+        <!--app:layout_constraintEnd_toEndOf="parent"-->
+        <!--app:layout_constraintStart_toStartOf="parent"-->
+        <!--app:layout_constraintTop_toTopOf="parent" />-->
+
+    <ImageView
         android:id="@+id/circleImageView2"
         android:layout_width="150dp"
         android:layout_height="150dp"
         android:layout_marginTop="32dp"
         android:scaleType="centerCrop"
-        android:src="@drawable/logo"
+        android:src="@drawable/web_hi_res_512"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="parent" />
@@ -101,7 +113,7 @@
                 android:layout_marginEnd="50dp"
                 android:layout_marginStart="50dp"
                 android:layout_marginTop="16dp"
-                android:background="@drawable/custom_button_color_green"
+                android:background="@drawable/background_modal_green"
                 android:text="Login"
                 android:textColor="#FFF"
                 android:textSize="17sp"
@@ -125,13 +137,13 @@
         android:layout_marginStart="8dp"
         android:text="Esqueceu sua senha?"
         android:textColor="#FFFFFF"
-        app:layout_constraintBottom_toTopOf="@+id/btnPrivacyPolicy"
+        app:layout_constraintBottom_toTopOf="@+id/btnPrivacyPolicy_id"
         app:layout_constraintEnd_toEndOf="@+id/cardView"
         app:layout_constraintHorizontal_bias="0.502"
         app:layout_constraintStart_toStartOf="@+id/cardView" />
 
     <TextView
-        android:id="@+id/btnPrivacyPolicy"
+        android:id="@+id/btnPrivacyPolicy_id"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_marginBottom="16dp"
