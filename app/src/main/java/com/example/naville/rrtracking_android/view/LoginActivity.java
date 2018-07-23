@@ -187,7 +187,8 @@ public class LoginActivity extends AppCompatActivity {
                     succesfulLogin();
 
                 } else {
-
+                    Toast.makeText(LoginActivity.this, "Verifique dados inseridos", Toast.LENGTH_SHORT).show();
+                    progressDialog.dismiss();
                     Log.i("TAG", "onResponseERRO: ERRO");
                 }
 

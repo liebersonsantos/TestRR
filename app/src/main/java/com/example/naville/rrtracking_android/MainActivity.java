@@ -324,7 +324,10 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
     public void onMapReady(GoogleMap googleMap) {
         mMap = googleMap;
 
-        if (ActivityCompat.checkSelfPermission(this, android.Manifest.permission.ACCESS_FINE_LOCATION) != PackageManager.PERMISSION_GRANTED && ActivityCompat.checkSelfPermission(this, android.Manifest.permission.ACCESS_COARSE_LOCATION) != PackageManager.PERMISSION_GRANTED) {
+        if (ActivityCompat.checkSelfPermission(this, android.Manifest.permission.ACCESS_FINE_LOCATION)
+                != PackageManager.PERMISSION_GRANTED
+                && ActivityCompat.checkSelfPermission(this, android.Manifest.permission.ACCESS_COARSE_LOCATION)
+                != PackageManager.PERMISSION_GRANTED) {
             return;
         }
 
@@ -362,6 +365,8 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
 
                 View view = LayoutInflater.from(MainActivity.this).inflate(R.layout.detail_instruments, null);
 
+                MyGeocoder.getInstrumentAddress(MainActivity.this, instrument.getTrackerLatitude(), instrument.getTrackerLongitude());
+
                 RecyclerView recyclerView = view.findViewById(R.id.recycler_view_instrument_detail);
                 TextView textNameDetail = view.findViewById(R.id.text_instrument_name_detail);
                 TextView textImeiDetail = view.findViewById(R.id.text_instrument_imei_detail);
@@ -380,7 +385,8 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
 
                 textNameDetail.setText(instrument.getInstrumentName());
                 textImeiDetail.setText(instrument.getTrackerIMEINumber());
-                textAdressDetail.setText(MyGeocoder.address);
+//                textAdressDetail.setText(MyGeocoder.address);
+                textAdressDetail.setText(MyGeocoder.instrumentAdress);
                 textLastLocationDetail.setText(instrument.getTrackerLastLocation());
 
                 btnCloseDetail.setOnClickListener(new View.OnClickListener() {
